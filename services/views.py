@@ -60,3 +60,36 @@ def login_user(request):
         except Worker.DoesNotExist:
             return Response({'success': True, 'role': 'customer', 'name': user.first_name or user.username})
     return Response({'error': 'Invalid username or password'}, status=401)
+
+
+@api_view(['POST'])
+def ai_match(request):
+    import urllib.request, json, re
+    problem = request.data.get('problem', '')
+    workers_data = request.data.get('workers', [])
+    worker_list = ", ".join([
+        "ID:" + str(w['id']) + " Name:" + w['name'] + " Service:" + w['service_type'] + " Rate:$" + str(w['hourly_rate']) + "/hr"
+        for w in workers_data
+    ])
+    prompt = "Customer problem: " + problem + ". Workers: " + worker_list + ". Pick BEST worker, respond JSON only no extra text: {worker_id:number,worker_name:string,reason:string,estimated_hours:number,tip:string}"
+    payload = json.dumps({
+        "model": "nvidia/nemotron-3-super-120b-a12b:free",
+        "messages": [{"role": "user", "content": prompt}],
+        "max_tokens": 300
+    }).encode()
+    req = urllib.request.Request(
+        "https://openrouter.ai/api/v1/chat/completions",
+        data=payload,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_OPENROUTER_KEY"
+        }
+    )
+    try:
+        with urllib.request.urlopen(req) as response:
+            data = json.loads(response.read())
+            text = data['choices'][0]['message']['content']
+            match = re.search(r'{[\s\S]*}', text)
+            return Response(json.loads(match.group()))
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

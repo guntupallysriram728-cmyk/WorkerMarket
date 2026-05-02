@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import WorkerViewSet, ReviewViewSet, register_worker, register_customer, login_user
+from .views import WorkerViewSet, ReviewViewSet, register_worker, register_customer, login_user, ai_match
 
 router = DefaultRouter()
 router.register(r'workers', WorkerViewSet)
@@ -11,4 +11,5 @@ urlpatterns = [
     path('register-worker/', register_worker),
     path('register-customer/', register_customer),
     path('login/', login_user),
+    path('ai-match/', ai_match),
 ]

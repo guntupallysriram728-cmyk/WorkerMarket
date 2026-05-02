@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import AIJobMatcher from "./AIJobMatcher";
 
 const API = "https://rabid-strode-disorder.ngrok-free.dev/api";
 
@@ -412,6 +413,7 @@ function App() {
           value={search} onChange={e=>setSearch(e.target.value)}
           style={{width:"100%",padding:15,borderRadius:15,border:"none",fontSize:15,
             marginBottom:25,boxShadow:"0 4px 15px rgba(0,0,0,0.1)",boxSizing:"border-box"}}/>
+        <AIJobMatcher workers={workers} onSelectWorker={setSelected}/>
         <h2 style={{color:"#2c3e50",marginBottom:15}}>Available Workers ({filtered.length})</h2>
         {filtered.length===0 && search && (
           <div style={{textAlign:"center",padding:40,color:"#7f8c8d"}}>
