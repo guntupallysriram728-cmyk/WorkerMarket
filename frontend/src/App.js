@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AIJobMatcher from "./AIJobMatcher";
+import AvailabilityCalendar from "./AvailabilityCalendar";
 
 const API = "https://rabid-strode-disorder.ngrok-free.dev/api";
 
@@ -244,11 +245,11 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
       display:"flex",alignItems:"center",justifyContent:"center",zIndex:1000}}>
       <div style={{background:"white",borderRadius:20,padding:30,width:"90%",maxWidth:520,maxHeight:"90vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,0.3)"}}>
         <div style={{display:"flex",gap:8,marginBottom:20}}>
-          {["book","chat","reviews"].map(t => (
+          {["book","chat","reviews","availability"].map(t => (
             <button key={t} onClick={()=>setTab(t)} style={{flex:1,padding:10,borderRadius:10,border:"none",
               background:tab===t?"linear-gradient(135deg,#3498db,#2980b9)":"#f0f0f0",
               color:tab===t?"white":"#666",cursor:"pointer",fontWeight:"bold",fontSize:13}}>
-              {t==="book"?"📅 Book":t==="chat"?"💬 Chat":"⭐ Reviews"}
+              {t==="book"?"📅 Book":t==="chat"?"💬 Chat":t==="availability" ? "📅 Schedule" : "⭐ Reviews"}
             </button>
           ))}
           <button onClick={onClose} style={{padding:"10px 15px",borderRadius:10,border:"none",
@@ -323,7 +324,10 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
             </div>
           </>
         )}
-        {tab==="reviews" && (
+        {tab==="availability" && (
+        <AvailabilityCalendar worker={worker} isOwner={false}/>
+      )}
+      {tab==="reviews" && (
           <>
             <h3 style={{color:"#2c3e50"}}>{worker.reviews.length} Review{worker.reviews.length!==1?"s":""}</h3>
             {worker.reviews.length===0 && <p style={{color:"#aaa"}}>No reviews yet. Be the first!</p>}

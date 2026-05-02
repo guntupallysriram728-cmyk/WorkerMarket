@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Worker, Review
-from .serializers import WorkerSerializer, ReviewSerializer
+from .models import Worker, Review, Availability, Availability
+from .serializers import WorkerSerializer, ReviewSerializer, AvailabilitySerializer
 
 class WorkerViewSet(viewsets.ModelViewSet):
     queryset = Worker.objects.all()
@@ -93,3 +93,59 @@ def ai_match(request):
             return Response(json.loads(match.group()))
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
+
+@api_view(['POST'])
+def set_availability(request):
+    worker_id = request.data.get('worker_id')
+    slots = request.data.get('slots', [])
+    try:
+        worker = Worker.objects.get(id=worker_id)
+        Availability.objects.filter(worker=worker).delete()
+        for slot in slots:
+            Availability.objects.create(
+                worker=worker,
+                day=slot['day'],
+                start_time=slot['start_time'],
+                end_time=slot['end_time']
+            )
+        return Response({'success': True, 'message': 'Availability updated!'})
+    except Worker.DoesNotExist:
+        return Response({'error': 'Worker not found'}, status=404)
+
+@api_view(['GET'])
+def get_availability(request, worker_id):
+    try:
+        worker = Worker.objects.get(id=worker_id)
+        availability = Availability.objects.filter(worker=worker)
+        return Response(AvailabilitySerializer(availability, many=True).data)
+    except Worker.DoesNotExist:
+        return Response({'error': 'Worker not found'}, status=404)
+
+
+@api_view(['POST'])
+def set_availability(request):
+    worker_id = request.data.get('worker_id')
+    slots = request.data.get('slots', [])
+    try:
+        worker = Worker.objects.get(id=worker_id)
+        Availability.objects.filter(worker=worker).delete()
+        for slot in slots:
+            Availability.objects.create(
+                worker=worker,
+                day=slot['day'],
+                start_time=slot['start_time'],
+                end_time=slot['end_time']
+            )
+        return Response({'success': True, 'message': 'Availability updated!'})
+    except Worker.DoesNotExist:
+        return Response({'error': 'Worker not found'}, status=404)
+
+@api_view(['GET'])
+def get_availability(request, worker_id):
+    try:
+        worker = Worker.objects.get(id=worker_id)
+        availability = Availability.objects.filter(worker=worker)
+        return Response(AvailabilitySerializer(availability, many=True).data)
+    except Worker.DoesNotExist:
+        return Response({'error': 'Worker not found'}, status=404)

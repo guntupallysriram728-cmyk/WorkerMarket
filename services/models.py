@@ -22,3 +22,19 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.reviewer} -> {self.worker} ({self.rating}/5)"
+
+
+class Availability(models.Model):
+    DAYS = [
+        ('monday', 'Monday'), ('tuesday', 'Tuesday'),
+        ('wednesday', 'Wednesday'), ('thursday', 'Thursday'),
+        ('friday', 'Friday'), ('saturday', 'Saturday'),
+        ('sunday', 'Sunday')
+    ]
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, related_name='availability')
+    day = models.CharField(max_length=10, choices=DAYS)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return self.worker.name + " - " + self.day

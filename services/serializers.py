@@ -1,13 +1,19 @@
 from rest_framework import serializers
-from .models import Worker, Review
+from .models import Worker, Review, Availability
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = '__all__'
 
+class AvailabilitySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Availability
+        fields = '__all__'
+
 class WorkerSerializer(serializers.ModelSerializer):
     reviews = ReviewSerializer(many=True, read_only=True)
+    availability = AvailabilitySerializer(many=True, read_only=True)
     average_rating = serializers.SerializerMethodField()
 
     def get_average_rating(self, obj):
