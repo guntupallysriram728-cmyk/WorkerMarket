@@ -149,3 +149,18 @@ def get_availability(request, worker_id):
         return Response(AvailabilitySerializer(availability, many=True).data)
     except Worker.DoesNotExist:
         return Response({'error': 'Worker not found'}, status=404)
+
+
+@api_view(['POST'])
+def toggle_guarantee(request):
+    worker_id = request.data.get('worker_id')
+    offers = request.data.get('offers_guarantee', False)
+    percentage = request.data.get('guarantee_percentage', 50)
+    try:
+        worker = Worker.objects.get(id=worker_id)
+        worker.offers_guarantee = offers
+        worker.guarantee_percentage = percentage
+        worker.save()
+        return Response({'success': True, 'offers_guarantee': worker.offers_guarantee})
+    except Worker.DoesNotExist:
+        return Response({'error': 'Worker not found'}, status=404)

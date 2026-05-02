@@ -9,6 +9,8 @@ class Worker(models.Model):
     hourly_rate = models.DecimalField(max_digits=6, decimal_places=2)
     phone = models.CharField(max_length=20)
     bio = models.TextField(blank=True)
+    offers_guarantee = models.BooleanField(default=False)
+    guarantee_percentage = models.IntegerField(default=50)
 
     def __str__(self):
         return self.name

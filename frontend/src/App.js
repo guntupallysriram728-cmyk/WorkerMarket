@@ -202,6 +202,9 @@ function WorkerCard({ worker, onClick }) {
         <div style={{marginLeft:57}}>
           <span style={{background:"#eaf4fd",color:"#3498db",padding:"3px 10px",borderRadius:20,fontSize:13,marginRight:8}}>📍 {worker.location}</span>
           <span style={{background:"#eafaf1",color:"#27ae60",padding:"3px 10px",borderRadius:20,fontSize:13}}>💰 ${worker.hourly_rate}/hr</span>
+          {worker.offers_guarantee && (
+            <span style={{background:"#fdf3cd",color:"#856404",padding:"3px 10px",borderRadius:20,fontSize:13,marginLeft:8}}>🛡️ {worker.guarantee_percentage}% Guarantee</span>
+          )}
         </div>
       </div>
       <div style={{textAlign:"right"}}>
@@ -263,6 +266,11 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
           <div>
             <h2 style={{margin:0,color:"#2c3e50"}}>{worker.name}</h2>
             <p style={{margin:0,color:"#7f8c8d",fontSize:13}}>{worker.service_type} • {worker.location}</p>
+          {worker.offers_guarantee && (
+            <div style={{background:"#fdf3cd",borderRadius:8,padding:"6px 12px",marginTop:8,fontSize:13,color:"#856404"}}>
+              🛡️ This worker offers a <strong>{worker.guarantee_percentage}% satisfaction guarantee</strong>. Not happy? Get a partial refund!
+            </div>
+          )}
           </div>
         </div>
         {tab==="book" && (!booked ? (
