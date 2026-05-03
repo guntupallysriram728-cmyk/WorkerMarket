@@ -122,3 +122,15 @@ import os
 TEMPLATES[0]['DIRS'] = [os.path.join(BASE_DIR, 'frontend/build')]
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'frontend/build/static')]
+
+INSTALLED_APPS = ['daphne'] + INSTALLED_APPS + ['channels']
+ASGI_APPLICATION = 'workermarket_api.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
+
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
