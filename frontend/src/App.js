@@ -231,7 +231,9 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
-  const total = (price * hours).toFixed(2);
+  const [recurring, setRecurring] = useState("once");
+  const discount = recurring==="weekly"?0.10:recurring==="biweekly"?0.07:recurring==="monthly"?0.05:0;
+  const total = ((price * hours) * (1 - discount)).toFixed(2);
   const sendMessage = () => {
     if (!chatMsg) return;
     setChat([...chat, {from:"You", text:chatMsg}]);
@@ -280,7 +282,14 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
             <Input label="📅 Date" name="date" type="date" value={date} onChange={e=>setDate(e.target.value)}/>
             <Input label="⏱ Hours Needed" name="hours" type="number" value={hours} onChange={e=>setHours(e.target.value)}/>
             <div style={{marginBottom:12}}>
-              <label style={{fontWeight:"bold",color:"#2c3e50",display:"block",marginBottom:4}}>📝 Job Description</label>
+              <label style={{fontWeight:"bold",color:"#2c3e50",display:"block",marginBottom:4}}>🔁 Recurring Booking</label>
+            <select value={recurring} onChange={e=>setRecurring(e.target.value)} style={{width:"100%",padding:10,borderRadius:8,border:"1px solid #ddd",marginBottom:15,boxSizing:"border-box"}}>
+              <option value="once">One time only</option>
+              <option value="weekly">Weekly (save 10%)</option>
+              <option value="biweekly">Every 2 weeks (save 7%)</option>
+              <option value="monthly">Monthly (save 5%)</option>
+            </select>
+            <label style={{fontWeight:"bold",color:"#2c3e50",display:"block",marginBottom:4}}>📝 Job Description</label>
               <textarea value={message} onChange={e=>setMessage(e.target.value)} rows={3} placeholder="Describe what you need..."
                 style={{width:"100%",padding:10,borderRadius:8,border:"1px solid #ddd",boxSizing:"border-box",fontSize:14}}/>
             </div>
