@@ -3,7 +3,7 @@ import AIJobMatcher from "./AIJobMatcher";
 import VideoCall from "./VideoCall";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 
-const API = "https://rabid-strode-disorder.ngrok-free.dev/api";
+const API = "https://workm.onrender.com/api";
 
 function StarRating({ rating, onRate }) {
   return (

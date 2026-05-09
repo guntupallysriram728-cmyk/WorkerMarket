@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = "https://rabid-strode-disorder.ngrok-free.dev/api";
+const API = "https://workm.onrender.com/api";
 
 const DAYS = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
 

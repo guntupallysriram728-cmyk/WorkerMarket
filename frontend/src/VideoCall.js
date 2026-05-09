@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-const WS_BASE = "wss://rabid-strode-disorder.ngrok-free.dev/ws/video/";
+const WS_BASE = "wss://workm.onrender.com/ws/video/";
 
 export default function VideoCall({ worker, onClose }) {
   const [status, setStatus] = useState("idle");
