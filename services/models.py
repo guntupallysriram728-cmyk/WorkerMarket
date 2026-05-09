@@ -40,3 +40,25 @@ class Availability(models.Model):
 
     def __str__(self):
         return self.worker.name + " - " + self.day
+
+
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, related_name='bookings')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    date = models.DateField()
+    hours = models.FloatField()
+    price_per_hour = models.DecimalField(max_digits=6, decimal_places=2)
+    total = models.DecimalField(max_digits=8, decimal_places=2)
+    description = models.TextField(blank=True)
+    recurring = models.CharField(max_length=20, default='once')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.customer.username + " -> " + self.worker.name

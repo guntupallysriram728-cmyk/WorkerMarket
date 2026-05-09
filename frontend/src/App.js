@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import AIJobMatcher from "./AIJobMatcher";
+import BookingsDashboard from "./BookingsDashboard";
 import VideoCall from "./VideoCall";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 
@@ -298,7 +299,25 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
               <strong style={{fontSize:22,color:"#27ae60"}}>Total: ${total}</strong>
               <p style={{margin:"4px 0 0",fontSize:12,color:"#7f8c8d"}}>{hours} hrs × ${price}/hr</p>
             </div>
-            <button onClick={()=>setBooked(true)} style={{width:"100%",background:"linear-gradient(135deg,#27ae60,#2ecc71)",
+            <button onClick={async()=>{
+              setBooked(true);
+              try {
+                await fetch("https://workm.onrender.com/api/create-booking/", {
+                  method:"POST",
+                  headers:{"Content-Type":"application/json"},
+                  body:JSON.stringify({
+                    worker_id:worker.id,
+                    customer_id:1,
+                    date:date,
+                    hours:hours,
+                    price_per_hour:price,
+                    total:total,
+                    description:message,
+                    recurring:recurring
+                  })
+                });
+              } catch(e) { console.log(e); }
+            }} style={{width:"100%",background:"linear-gradient(135deg,#27ae60,#2ecc71)",
               color:"white",border:"none",padding:15,borderRadius:12,cursor:"pointer",fontSize:16,fontWeight:"bold"}}>
               Confirm Booking ✓
             </button>
@@ -394,6 +413,7 @@ function App() {
   const [search, setSearch] = useState("");
   const [showLogin, setShowLogin] = useState(false);
   const [showWorkerSignup, setShowWorkerSignup] = useState(false);
+  const [showBookings, setShowBookings] = useState(false);
   const [showCustomerSignup, setShowCustomerSignup] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -420,8 +440,10 @@ function App() {
             <div style={{textAlign:"right"}}>
               <p style={{margin:0,fontSize:14}}>👋 Hi, {user.name}!</p>
               <p style={{margin:"2px 0 0",fontSize:12,opacity:0.8}}>{user.role==="worker"?"Worker Account":"Customer Account"}</p>
-              <button onClick={()=>setUser(null)} style={{background:"rgba(255,255,255,0.2)",color:"white",
-                border:"none",padding:"4px 12px",borderRadius:8,cursor:"pointer",fontSize:12,marginTop:4}}>Logout</button>
+              <div style={{display:"flex",gap:6,marginTop:4}}>
+                <button onClick={()=>setShowBookings(true)} style={{background:"#f39c12",color:"white",border:"none",padding:"4px 12px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:"bold"}}>📋 Bookings</button>
+                <button onClick={()=>setUser(null)} style={{background:"rgba(255,255,255,0.2)",color:"white",border:"none",padding:"4px 12px",borderRadius:8,cursor:"pointer",fontSize:12}}>Logout</button>
+              </div>
             </div>
           ) : (
             <AuthButtons
@@ -452,6 +474,7 @@ function App() {
       </div>
 
       {selected && <BookingModal worker={selected} onClose={()=>{setSelected(null);fetchWorkers();}} onReviewSubmit={fetchWorkers}/>}
+      {showBookings && user && <BookingsDashboard user={user} onClose={()=>setShowBookings(false)}/> }
       {showLogin && <LoginModal onClose={()=>setShowLogin(false)} onSuccess={data=>{setUser(data);}}/>}
       {showCustomerSignup && <CustomerSignupModal onClose={()=>setShowCustomerSignup(false)} onSuccess={data=>{setUser({...data,role:"customer"});}}/>}
       {showWorkerSignup && <WorkerSignupModal onClose={()=>setShowWorkerSignup(false)} onSuccess={data=>{setUser({name:data.name,role:"worker"});fetchWorkers();}}/>}

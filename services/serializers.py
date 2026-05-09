@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Worker, Review, Availability
+from .models import Worker, Review, Availability, Booking
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,4 +24,19 @@ class WorkerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Worker
+        fields = '__all__'
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    worker_name = serializers.SerializerMethodField()
+    customer_name = serializers.SerializerMethodField()
+
+    def get_worker_name(self, obj):
+        return obj.worker.name
+
+    def get_customer_name(self, obj):
+        return obj.customer.first_name + " " + obj.customer.last_name if obj.customer.first_name else obj.customer.username
+
+    class Meta:
+        model = Booking
         fields = '__all__'

@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Worker, Review, Availability, Availability
-from .serializers import WorkerSerializer, ReviewSerializer, AvailabilitySerializer
+from .models import Worker, Review, Availability, Booking, Availability
+from .serializers import WorkerSerializer, ReviewSerializer, AvailabilitySerializer, BookingSerializer
 
 class WorkerViewSet(viewsets.ModelViewSet):
     queryset = Worker.objects.all()
@@ -164,3 +164,52 @@ def toggle_guarantee(request):
         return Response({'success': True, 'offers_guarantee': worker.offers_guarantee})
     except Worker.DoesNotExist:
         return Response({'error': 'Worker not found'}, status=404)
+
+
+@api_view(['POST'])
+def create_booking(request):
+    worker_id = request.data.get('worker_id')
+    customer_id = request.data.get('customer_id', 1)
+    try:
+        worker = Worker.objects.get(id=worker_id)
+        customer = User.objects.get(id=customer_id)
+        booking = Booking.objects.create(
+            worker=worker,
+            customer=customer,
+            date=request.data.get('date'),
+            hours=request.data.get('hours'),
+            price_per_hour=request.data.get('price_per_hour'),
+            total=request.data.get('total'),
+            description=request.data.get('description', ''),
+            recurring=request.data.get('recurring', 'once'),
+            status='pending'
+        )
+        return Response(BookingSerializer(booking).data, status=201)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+def get_bookings(request):
+    user_id = request.GET.get('user_id')
+    role = request.GET.get('role', 'customer')
+    try:
+        if role == 'worker':
+            worker = Worker.objects.get(user_id=user_id)
+            bookings = Booking.objects.filter(worker=worker).order_by('-created_at')
+        else:
+            bookings = Booking.objects.filter(customer_id=user_id).order_by('-created_at')
+        return Response(BookingSerializer(bookings, many=True).data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+@api_view(['POST'])
+def update_booking_status(request):
+    booking_id = request.data.get('booking_id')
+    status = request.data.get('status')
+    try:
+        booking = Booking.objects.get(id=booking_id)
+        booking.status = status
+        booking.save()
+        return Response(BookingSerializer(booking).data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
