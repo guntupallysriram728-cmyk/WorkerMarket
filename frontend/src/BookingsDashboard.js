@@ -23,7 +23,7 @@ export default function BookingsDashboard({ user, onClose }) {
     setLoading(false);
   };
 
-  useEffect(() => { fetchBookings(); }, []);
+  useEffect(() => { fetchBookings(); }, [user]); // eslint-disable-line
 
   const updateStatus = async (bookingId, status) => {
     await fetch(API + "/update-booking-status/", {
