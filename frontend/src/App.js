@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import AIJobMatcher from "./AIJobMatcher";
-import BookingsDashboard from "./BookingsDashboard";
 import WorkerDashboard from "./WorkerDashboard";
 import CustomerDashboard from "./CustomerDashboard";
 import VideoCall from "./VideoCall";
