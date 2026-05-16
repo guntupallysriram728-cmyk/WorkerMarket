@@ -31,7 +31,9 @@ def register_worker(request):
         user=user, name=name, service_type=service_type,
         location=location, hourly_rate=hourly_rate, phone=phone, bio=bio
     )
-    return Response(WorkerSerializer(worker).data, status=201)
+    data = WorkerSerializer(worker).data
+    data['user_id'] = user.id
+    return Response(data, status=201)
 
 @api_view(['POST'])
 def register_customer(request):
@@ -46,7 +48,7 @@ def register_customer(request):
         username=username, password=password,
         email=email, first_name=first_name, last_name=last_name
     )
-    return Response({'success': True, 'username': user.username, 'name': first_name + ' ' + last_name}, status=201)
+    return Response({'success': True, 'user_id': user.id, 'username': user.username, 'name': first_name + ' ' + last_name}, status=201)
 
 @api_view(['POST'])
 def login_user(request):
@@ -56,9 +58,9 @@ def login_user(request):
     if user:
         try:
             worker = Worker.objects.get(user=user)
-            return Response({'success': True, 'role': 'worker', 'worker_id': worker.id, 'name': worker.name})
+            return Response({'success': True, 'role': 'worker', 'worker_id': worker.id, 'user_id': user.id, 'name': worker.name})
         except Worker.DoesNotExist:
-            return Response({'success': True, 'role': 'customer', 'name': user.first_name or user.username})
+            return Response({'success': True, 'role': 'customer', 'user_id': user.id, 'name': user.first_name or user.username})
     return Response({'error': 'Invalid username or password'}, status=401)
 
 

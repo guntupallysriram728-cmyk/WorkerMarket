@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import AIJobMatcher from "./AIJobMatcher";
 import BookingsDashboard from "./BookingsDashboard";
+import WorkerDashboard from "./WorkerDashboard";
+import CustomerDashboard from "./CustomerDashboard";
 import VideoCall from "./VideoCall";
 import AvailabilityCalendar from "./AvailabilityCalendar";
 
@@ -474,10 +476,11 @@ function App() {
       </div>
 
       {selected && <BookingModal worker={selected} onClose={()=>{setSelected(null);fetchWorkers();}} onReviewSubmit={fetchWorkers}/>}
-      {showBookings && user && <BookingsDashboard user={user} onClose={()=>setShowBookings(false)}/> }
+      {showBookings && user && user.role==="worker" && <WorkerDashboard user={user} onClose={()=>setShowBookings(false)}/> }
+      {showBookings && user && user.role==="customer" && <CustomerDashboard user={user} onClose={()=>setShowBookings(false)}/> }
       {showLogin && <LoginModal onClose={()=>setShowLogin(false)} onSuccess={data=>{setUser(data);}}/>}
-      {showCustomerSignup && <CustomerSignupModal onClose={()=>setShowCustomerSignup(false)} onSuccess={data=>{setUser({...data,role:"customer"});}}/>}
-      {showWorkerSignup && <WorkerSignupModal onClose={()=>setShowWorkerSignup(false)} onSuccess={data=>{setUser({name:data.name,role:"worker"});fetchWorkers();}}/>}
+      {showCustomerSignup && <CustomerSignupModal onClose={()=>setShowCustomerSignup(false)} onSuccess={data=>{setUser({...data,role:"customer",user_id:data.user_id});}}/>}
+      {showWorkerSignup && <WorkerSignupModal onClose={()=>setShowWorkerSignup(false)} onSuccess={data=>{setUser({name:data.name,role:"worker",user_id:data.user_id,worker_id:data.id});fetchWorkers();}}/>}
     </div>
   );
 }
