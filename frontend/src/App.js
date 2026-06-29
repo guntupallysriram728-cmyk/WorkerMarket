@@ -415,6 +415,7 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showWorkerSignup, setShowWorkerSignup] = useState(false);
   const [showBookings, setShowBookings] = useState(false);
+  const [workerTab, setWorkerTab] = useState("dashboard");
   const [showCustomerSignup, setShowCustomerSignup] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -441,10 +442,7 @@ function App() {
             <div style={{textAlign:"right"}}>
               <p style={{margin:0,fontSize:14}}>👋 Hi, {user.name}!</p>
               <p style={{margin:"2px 0 0",fontSize:12,opacity:0.8}}>{user.role==="worker"?"Worker Account":"Customer Account"}</p>
-              <div style={{display:"flex",gap:6,marginTop:4}}>
-                <button onClick={()=>setShowBookings(true)} style={{background:"#f39c12",color:"white",border:"none",padding:"4px 12px",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:"bold"}}>📋 Bookings</button>
-                <button onClick={()=>setUser(null)} style={{background:"rgba(255,255,255,0.2)",color:"white",border:"none",padding:"4px 12px",borderRadius:8,cursor:"pointer",fontSize:12}}>Logout</button>
-              </div>
+              <button onClick={()=>setUser(null)} style={{background:"rgba(255,255,255,0.2)",color:"white",border:"none",padding:"4px 12px",borderRadius:8,cursor:"pointer",fontSize:12,marginTop:4}}>Logout</button>
             </div>
           ) : (
             <AuthButtons
@@ -458,7 +456,37 @@ function App() {
 
       {user && user.role==="worker" ? (
         <div style={{maxWidth:800,margin:"30px auto",padding:"0 20px"}}>
-          <WorkerDashboard user={user} embedded={true} />
+          <div style={{display:"flex",gap:0,background:"white",borderRadius:15,
+            boxShadow:"0 4px 15px rgba(0,0,0,0.08)",marginBottom:20,overflow:"hidden"}}>
+            {[
+              {key:"dashboard",label:"📋 Dashboard"},
+              {key:"messages",label:"💬 Messages"},
+              {key:"profile",label:"👤 Profile"}
+            ].map(t => (
+              <button key={t.key} onClick={()=>setWorkerTab(t.key)} style={{
+                flex:1,padding:"14px",border:"none",cursor:"pointer",fontWeight:"bold",fontSize:14,
+                background:workerTab===t.key?"linear-gradient(135deg,#2c3e50,#3498db)":"white",
+                color:workerTab===t.key?"white":"#7f8c8d",
+                borderBottom:workerTab===t.key?"3px solid #3498db":"3px solid transparent"
+              }}>{t.label}</button>
+            ))}
+          </div>
+          {workerTab==="dashboard" && <WorkerDashboard user={user} embedded={true}/>}
+          {workerTab==="messages" && (
+            <div style={{background:"white",borderRadius:15,padding:30,textAlign:"center",color:"#7f8c8d",boxShadow:"0 4px 15px rgba(0,0,0,0.08)"}}>
+              <p style={{fontSize:40}}>💬</p>
+              <h3>Messages</h3>
+              <p>Real-time messaging coming soon!</p>
+            </div>
+          )}
+          {workerTab==="profile" && (
+            <div style={{background:"white",borderRadius:15,padding:25,boxShadow:"0 4px 15px rgba(0,0,0,0.08)"}}>
+              <h2 style={{color:"#2c3e50",margin:"0 0 15px"}}>👤 My Profile</h2>
+              <p style={{color:"#7f8c8d"}}>Name: {user.name}</p>
+              <p style={{color:"#7f8c8d"}}>Role: Worker</p>
+              <p style={{color:"#7f8c8d"}}>Worker ID: {user.worker_id}</p>
+            </div>
+          )}
         </div>
       ) : (
       <div style={{maxWidth:800,margin:"30px auto",padding:"0 20px"}}>
@@ -481,7 +509,7 @@ function App() {
       )}
 
       {selected && <BookingModal worker={selected} onClose={()=>{setSelected(null);fetchWorkers();}} onReviewSubmit={fetchWorkers}/>}
-      {showBookings && user && user.role==="worker" && <WorkerDashboard user={user} onClose={()=>setShowBookings(false)}/> }
+      
       {showBookings && user && user.role==="customer" && <CustomerDashboard user={user} onClose={()=>setShowBookings(false)}/> }
       {showLogin && <LoginModal onClose={()=>setShowLogin(false)} onSuccess={data=>{setUser(data);}}/>}
       {showCustomerSignup && <CustomerSignupModal onClose={()=>setShowCustomerSignup(false)} onSuccess={data=>{setUser({...data,role:"customer",user_id:data.user_id});}}/>}
