@@ -456,6 +456,11 @@ function App() {
         </div>
       </div>
 
+      {user && user.role==="worker" ? (
+        <div style={{maxWidth:800,margin:"30px auto",padding:"0 20px"}}>
+          <WorkerDashboard user={user} embedded={true} />
+        </div>
+      ) : (
       <div style={{maxWidth:800,margin:"30px auto",padding:"0 20px"}}>
         <input type="text" placeholder="🔍 Search by name or service type..."
           value={search} onChange={e=>setSearch(e.target.value)}
@@ -473,6 +478,7 @@ function App() {
           <WorkerCard key={worker.id} worker={worker} onClick={setSelected}/>
         ))}
       </div>
+      )}
 
       {selected && <BookingModal worker={selected} onClose={()=>{setSelected(null);fetchWorkers();}} onReviewSubmit={fetchWorkers}/>}
       {showBookings && user && user.role==="worker" && <WorkerDashboard user={user} onClose={()=>setShowBookings(false)}/> }

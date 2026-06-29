@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const API = "https://workm.onrender.com/api";
 
-export default function WorkerDashboard({ user, onClose }) {
+export default function WorkerDashboard({ user, onClose, embedded }) {
   const [bookings, setBookings] = useState([]);
   const [stats, setStats] = useState({total:0, pending:0, confirmed:0, completed:0, earnings:0});
   const [tab, setTab] = useState("requests");
@@ -36,10 +36,12 @@ export default function WorkerDashboard({ user, onClose }) {
 
   const STATUS_COLORS = {pending:"#f39c12", confirmed:"#27ae60", completed:"#3498db", cancelled:"#e74c3c"};
 
+  const outerStyle = embedded ? {} : {position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000};
+  const innerStyle = embedded ? {background:"white",borderRadius:20,width:"100%",boxShadow:"0 4px 20px rgba(0,0,0,0.1)"} : {background:"white",borderRadius:20,width:"90%",maxWidth:650,maxHeight:"90vh",overflowY:"auto"};
+
   return (
-    <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,background:"rgba(0,0,0,0.7)",
-      display:"flex",alignItems:"center",justifyContent:"center",zIndex:2000}}>
-      <div style={{background:"white",borderRadius:20,width:"90%",maxWidth:650,maxHeight:"90vh",overflowY:"auto"}}>
+    <div style={outerStyle}>
+      <div style={innerStyle}>
         
         <div style={{background:"linear-gradient(135deg,#2c3e50,#3498db)",padding:"20px 25px",borderRadius:"20px 20px 0 0",color:"white"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -47,8 +49,7 @@ export default function WorkerDashboard({ user, onClose }) {
               <h2 style={{margin:0}}>Worker Dashboard</h2>
               <p style={{margin:"4px 0 0",opacity:0.8,fontSize:14}}>Welcome back, {user.name}!</p>
             </div>
-            <button onClick={onClose} style={{background:"rgba(255,255,255,0.2)",color:"white",
-              border:"none",padding:"8px 15px",borderRadius:10,cursor:"pointer",fontWeight:"bold"}}>✕ Close</button>
+            <button onClick={onClose} style={{background:embedded?"none":"rgba(255,255,255,0.2)",color:"white",border:"none",padding:embedded?"0":"8px 15px",borderRadius:10,cursor:"pointer",fontWeight:"bold",display:embedded?"none":"inline-block"}}>✕ Close</button>
           </div>
           
           <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10,marginTop:15}}>
