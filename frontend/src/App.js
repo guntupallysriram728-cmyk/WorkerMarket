@@ -231,6 +231,28 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
   const [booked, setBooked] = useState(false);
   const [chat, setChat] = useState([]);
   const [chatMsg, setChatMsg] = useState("");
+  const [ws, setWs] = useState(null);
+  const customerId = (typeof window !== "undefined" && window.currentUserId) || 1;
+
+  useEffect(() => {
+    const roomId = "chat-" + worker.id + "-" + customerId;
+    const socket = new WebSocket("wss://workm.onrender.com/ws/chat/" + roomId + "/");
+    socket.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      setChat(prev => [...prev, {from: data.sender === "customer" ? "You" : worker.name, text: data.text}]);
+    };
+    setWs(socket);
+
+    fetch("https://workm.onrender.com/api/get-messages/?worker_id=" + worker.id + "&customer_id=" + customerId)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setChat(data.map(m => ({from: m.sender === "customer" ? "You" : worker.name, text: m.text})));
+        }
+      });
+
+    return () => socket.close();
+  }, [worker.id]);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -238,10 +260,9 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
   const discount = recurring==="weekly"?0.10:recurring==="biweekly"?0.07:recurring==="monthly"?0.05:0;
   const total = ((price * hours) * (1 - discount)).toFixed(2);
   const sendMessage = () => {
-    if (!chatMsg) return;
-    setChat([...chat, {from:"You", text:chatMsg}]);
+    if (!chatMsg || !ws || ws.readyState !== 1) return;
+    ws.send(JSON.stringify({sender:"customer", text:chatMsg, worker_id:worker.id, customer_id:customerId}));
     setChatMsg("");
-    setTimeout(() => setChat(prev => [...prev, {from:worker.name, text:"Thanks! I can do it for $"+price+"/hr. When works for you?"}]), 1000);
   };
   const submitReview = async () => {
     await fetch(API+"/reviews/", {method:"POST", headers:{"Content-Type":"application/json"},

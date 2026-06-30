@@ -62,3 +62,14 @@ class Booking(models.Model):
 
     def __str__(self):
         return self.customer.username + " -> " + self.worker.name
+
+
+class Message(models.Model):
+    worker = models.ForeignKey(Worker, on_delete=models.CASCADE, related_name='messages')
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
+    sender = models.CharField(max_length=20)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.sender + ": " + self.text[:30]

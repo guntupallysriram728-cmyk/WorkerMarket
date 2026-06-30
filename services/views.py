@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-from .models import Worker, Review, Availability, Booking, Availability
+from .models import Worker, Review, Availability, Booking, Message, Availability
 from .serializers import WorkerSerializer, ReviewSerializer, AvailabilitySerializer, BookingSerializer
 
 class WorkerViewSet(viewsets.ModelViewSet):
@@ -213,5 +213,16 @@ def update_booking_status(request):
         booking.status = status
         booking.save()
         return Response(BookingSerializer(booking).data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
+
+@api_view(['GET'])
+def get_messages(request):
+    worker_id = request.GET.get('worker_id')
+    customer_id = request.GET.get('customer_id')
+    try:
+        messages = Message.objects.filter(worker_id=worker_id, customer_id=customer_id).order_by('created_at')
+        return Response([{'sender': m.sender, 'text': m.text, 'created_at': m.created_at} for m in messages])
     except Exception as e:
         return Response({'error': str(e)}, status=400)
