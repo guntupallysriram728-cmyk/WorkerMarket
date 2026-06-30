@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import AIJobMatcher from "./AIJobMatcher";
 import WorkerDashboard from "./WorkerDashboard";
+import WorkerMessages from "./WorkerMessages";
 import CustomerDashboard from "./CustomerDashboard";
 import VideoCall from "./VideoCall";
 import AvailabilityCalendar from "./AvailabilityCalendar";
@@ -495,11 +496,7 @@ function App() {
           </div>
           {workerTab==="dashboard" && <WorkerDashboard user={user} embedded={true}/>}
           {workerTab==="messages" && (
-            <div style={{background:"white",borderRadius:15,padding:30,textAlign:"center",color:"#7f8c8d",boxShadow:"0 4px 15px rgba(0,0,0,0.08)"}}>
-              <p style={{fontSize:40}}>💬</p>
-              <h3>Messages</h3>
-              <p>Real-time messaging coming soon!</p>
-            </div>
+            <WorkerMessages user={user}/>
           )}
           {workerTab==="profile" && (
             <div style={{background:"white",borderRadius:15,padding:25,boxShadow:"0 4px 15px rgba(0,0,0,0.08)"}}>
