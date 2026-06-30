@@ -252,6 +252,7 @@ function BookingModal({ worker, onClose, onReviewSubmit }) {
       });
 
     return () => socket.close();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [worker.id]);
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
